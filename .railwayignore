@@ -1,0 +1,7 @@
+.env
+node_modules
+anon.db
+*.db
+*.sqlite
+*.sqlite3
+.git

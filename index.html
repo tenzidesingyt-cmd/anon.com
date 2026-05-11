@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Анон | социальная сеть</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="authView" class="auth-shell">
+    <section class="auth-brand">
+      <div class="brand-mark">A</div>
+      <h1>Анон</h1>
+      <p>Социальная лента с регистрацией, профилями, уведомлениями, комментариями и админ-панелью.</p>
+      <div class="brand-stats">
+        <span><strong>Лента</strong> как в соцсетях</span>
+        <span><strong>Профили</strong> пользователей</span>
+        <span><strong>Админ</strong> admin@anon.ru</span>
+      </div>
+    </section>
+
+    <main class="auth-card">
+      <div class="auth-tabs">
+        <button id="loginTab" class="auth-tab active" type="button">Вход</button>
+        <button id="registerTab" class="auth-tab" type="button">Регистрация</button>
+      </div>
+
+      <form id="authForm" autocomplete="on">
+        <div id="nameField" class="field hidden">
+          <label for="displayName">Имя</label>
+          <input id="displayName" type="text" maxlength="32" placeholder="Например, Никита" />
+        </div>
+        <div id="usernameField" class="field hidden">
+          <label for="username">Ник</label>
+          <input id="username" type="text" maxlength="20" placeholder="nikita" />
+          <small>Латиница, цифры и подчёркивание, 3-20 символов.</small>
+        </div>
+        <div id="authAvatarField" class="field hidden">
+          <label for="authAvatar">Аватарка</label>
+          <input id="authAvatar" type="file" accept="image/*" />
+          <small>Можно добавить фото сразу или позже в профиле.</small>
+        </div>
+        <div class="field">
+          <label for="email">Почта</label>
+          <input id="email" type="email" placeholder="you@example.com" required />
+        </div>
+        <div class="field">
+          <label for="password">Пароль</label>
+          <div class="password-field">
+            <input id="password" type="password" minlength="6" placeholder="Минимум 6 символов" required />
+            <button id="togglePassword" class="password-toggle" type="button" aria-label="Показать пароль" title="Показать пароль">👁</button>
+          </div>
+        </div>
+        <button id="authSubmit" class="primary-btn" type="submit">Войти</button>
+        <p id="authHint" class="auth-hint">Нет аккаунта? Переключись на регистрацию.</p>
+        <!-- Надпись с демо-данными админа удалена -->
+      </form>
+    </main>
+  </div>
+
+  <div id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <button class="logo-button" type="button" data-page="home"><span class="brand-mark small">A</span><span>Анон</span></button>
+      <nav class="main-nav">
+        <button class="nav-link active" type="button" data-page="home"><span>⌂</span><b>Главная</b></button>
+        <button class="nav-link" type="button" data-page="explore"><span>#</span><b>Поиск</b></button>
+        <button class="nav-link" type="button" data-page="messages"><span>✉</span><b>ЛС</b><em id="msgBadge" class="badge hidden">0</em></button>
+        <button class="nav-link" type="button" data-page="notifications"><span>◉</span><b>Уведомления</b><em id="notifBadge" class="badge hidden">0</em></button>
+        <button class="nav-link" type="button" data-page="bookmarks"><span>☆</span><b>Закладки</b></button>
+        <button class="nav-link" type="button" data-page="profile"><span>◎</span><b>Профиль</b></button>
+        <button id="adminNav" class="nav-link hidden" type="button" data-page="admin"><span>⚙</span><b>Админ</b></button>
+      </nav>
+      <button id="newPostBtn" class="compose-main" type="button">Новый пост</button>
+      <div class="mini-profile">
+        <div id="miniAvatar" class="avatar">A</div>
+        <div><strong id="miniName">Пользователь</strong><span id="miniHandle">@user</span></div>
+        <button id="logoutBtn" class="icon-btn" title="Выйти" type="button">↗</button>
+      </div>
+    </aside>
+
+    <main class="feed-column">
+      <header class="topbar">
+        <h2 id="pageTitle">Главная</h2>
+        <div class="top-actions">
+          <button id="themeBtn" class="icon-btn" title="Тема" type="button">◐</button>
+        </div>
+      </header>
+
+      <section id="homePage" class="page active">
+        <form id="postForm" class="composer">
+          <div id="composerAvatar" class="avatar">A</div>
+          <div class="composer-body">
+            <textarea id="postText" maxlength="280" placeholder="Что происходит? Можно @username и #хештег" rows="3"></textarea>
+            <div class="composer-footer"><span id="charCount">0 / 280</span><button class="primary-btn small" type="submit">Отправить</button></div>
+          </div>
+        </form>
+        <div class="feed-tabs"><button class="feed-tab active" data-feed="all" type="button">Все</button><button class="feed-tab" data-feed="following" type="button">Подписки</button><button class="feed-tab" data-feed="popular" type="button">Популярное</button></div>
+        <div id="feedList" class="post-list"></div>
+      </section>
+
+      <section id="explorePage" class="page">
+        <div class="search-panel"><input id="searchInput" type="search" placeholder="Поиск по постам, никам и именам" /></div>
+        <div id="searchResults" class="post-list"></div>
+      </section>
+
+      <section id="messagesPage" class="page">
+        <div class="messages-layout">
+          <aside class="dialogs-panel"><div id="dialogsList"></div></aside>
+          <section class="chat-panel">
+            <div id="chatEmpty" class="empty">Выбери пользователя или нажми «Написать» в профиле.</div>
+            <div id="chatBox" class="chat-box hidden">
+              <header class="chat-header" id="chatHeader"></header>
+              <div id="chatMessages" class="chat-messages"></div>
+              <form id="messageForm" class="message-form">
+                <input id="messageText" maxlength="500" placeholder="Написать сообщение" />
+                <button id="voiceBtn" class="secondary-btn voice-btn" type="button">🎙 Записать</button>
+                <button class="primary-btn small" type="submit">Отправить</button>
+              </form>
+              <p id="voiceHint" class="voice-hint hidden">Идёт запись голосового. Нажми «Стоп», чтобы отправить.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+      <section id="notificationsPage" class="page"><div id="notificationsList" class="post-list"></div></section>
+      <section id="bookmarksPage" class="page"><div id="bookmarksList" class="post-list"></div></section>
+
+      <section id="profilePage" class="page">
+        <div id="profileCover" class="profile-cover"></div>
+        <section class="profile-head">
+          <div class="profile-row">
+            <div id="profileAvatar" class="avatar large">A</div>
+            <div class="profile-actions"><button id="editProfileBtn" class="secondary-btn" type="button">Редактировать</button><button id="messageProfileBtn" class="secondary-btn hidden" type="button">Написать</button><button id="followProfileBtn" class="primary-btn small hidden" type="button">Подписаться</button></div>
+          </div>
+          <h1 id="profileName">Пользователь</h1>
+          <p id="profileHandle">@user</p>
+          <p id="profileBio" class="profile-bio">Пока без описания.</p>
+          <div class="profile-stats"><span><strong id="profilePosts">0</strong> постов</span><button class="profile-stat-btn" type="button" data-profile-list="followers"><strong id="profileFollowers">0</strong> подписчиков</button><button class="profile-stat-btn" type="button" data-profile-list="following"><strong id="profileFollowing">0</strong> подписок</button><span><strong id="profileLikes">0</strong> лайков</span></div>
+        </section>
+        <div id="profilePostsList" class="post-list"></div>
+      </section>
+
+      <section id="adminPage" class="page">
+        <div class="admin-grid">
+          <div class="stat-card"><strong id="adminUsers">0</strong><span>пользователей</span></div>
+          <div class="stat-card"><strong id="adminOnline">0</strong><span>онлайн</span></div>
+          <div class="stat-card"><strong id="adminAuths">0</strong><span>входов</span></div>
+          <div class="stat-card"><strong id="adminPosts">0</strong><span>постов</span></div>
+        </div>
+        <div class="admin-block"><h3>Пользователи</h3><div id="adminUsersList"></div></div>
+      </section>
+    </main>
+
+    <aside class="right-panel">
+      <div class="panel-block"><h3>В тренде</h3><div id="trendsList" class="trend-list"></div></div>
+      <div class="panel-block"><h3>Кого почитать</h3><div id="suggestionsList"></div></div>
+      <div class="panel-block"><h3>Идеи для поста</h3><button class="idea-btn" type="button">Непопулярное мнение:</button><button class="idea-btn" type="button">Маленькая победа дня</button><button class="idea-btn" type="button">Что сегодня удивило?</button></div>
+    </aside>
+  </div>
+
+  <dialog id="profileDialog" class="modal">
+    <form id="profileForm" method="dialog">
+      <h3>Редактировать профиль</h3>
+      <div class="field"><label for="editName">Имя</label><input id="editName" maxlength="32" /></div>
+      <div class="field"><label for="editBio">О себе</label><input id="editBio" maxlength="120" /></div>
+      <div class="field"><label for="editAvatar">Аватар</label><input id="editAvatar" type="file" accept="image/*" /></div>
+      <div class="modal-actions"><button class="secondary-btn" value="cancel" type="button" id="cancelProfileEdit">Отмена</button><button class="primary-btn small" value="default">Сохранить</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="peopleDialog" class="modal people-modal">
+    <div class="people-modal-head">
+      <h3 id="peopleDialogTitle">Подписчики</h3>
+      <button id="closePeopleDialog" class="icon-btn" type="button">×</button>
+    </div>
+    <div id="profilePeopleList" class="profile-people-list modal-list"></div>
+  </dialog>
+
+  <dialog id="codeDialog" class="modal code-modal">
+    <form id="codeForm" method="dialog">
+      <h3 id="codeTitle">Подтверждение</h3>
+      <p id="codeText" class="code-text">Введите код подтверждения.</p>
+      <div class="test-code-box">Тестовый код: <strong id="testCodeValue">000000</strong></div>
+      <div class="field">
+        <label for="codeInput">Код</label>
+        <input id="codeInput" inputmode="numeric" maxlength="6" placeholder="6 цифр" autocomplete="one-time-code" />
+      </div>
+      <div class="modal-actions">
+        <button id="cancelCode" class="secondary-btn" type="button">Отмена</button>
+        <button class="primary-btn small" type="submit">Подтвердить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="db.js"></script>
+  <script src="auth.js"></script>
+  <script src="pages.js"></script>
+  <script src="admin.js"></script>
+  <script src="messages.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
